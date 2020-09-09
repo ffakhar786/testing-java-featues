@@ -34,6 +34,7 @@ public class FunctionalIntefaceMain {
 		ilst = Arrays.asList(8, 4, 2, 5, 0, 12, 3, 17, 13);
 		int sum = sumStream(ilst);
 		System.out.println(sum);
+		if (true) return ;
 
 		Stream<Integer> stream = Stream.of(1,2,3,4);
 		stream = Stream.of(new Integer[]{1,2,3,4});
@@ -114,7 +115,7 @@ public class FunctionalIntefaceMain {
 	}
 
 	private static int sumStream(List<Integer> list) {
-		return list.stream().filter(i -> i > 10).mapToInt(i -> i).sum();
+		return list.stream().filter(i -> i > 15).mapToInt(i -> i).sum();
 	}
 }
 /* 

@@ -35,7 +35,7 @@ public final class FinalClassExample {
 	 * @param hm
 	 */
 
-	public FinalClassExample(int i, String n, HashMap<String, String> hm) {
+	/*public FinalClassExample(int i, String n, HashMap<String, String> hm) {
 		System.out.println("Performing Deep Copy for Object initialization");
 		this.id = i;
 		this.name = n;
@@ -47,20 +47,15 @@ public final class FinalClassExample {
 			tempMap.put(key, hm.get(key));
 		}
 		this.testMap = tempMap;
-	}
+	}*/
 
 	/**
 	 * Constructor performing Shallow Copy
-	 * 
-	 * @param i
-	 * @param n
-	 * @param hm
 	 */
-	/**
-	 * public FinalClassExample(int i, String n, HashMap<String,String> hm){
-	 * System.out.println("Performing Shallow Copy for Object initialization");
-	 * this.id=i; this.name=n; this.testMap=hm; }
-	 */
+	public FinalClassExample(int i, String n, HashMap<String,String> hm){
+	  System.out.println("Performing Shallow Copy for Object initialization");
+	  this.id=i; this.name=n; this.testMap=hm;
+     }
 
 	/**
 	 * To test the consequences of Shallow Copy and how to avoid it with Deep Copy

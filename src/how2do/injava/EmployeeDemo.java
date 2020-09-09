@@ -13,11 +13,12 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class EmployeeDemo {
-	List<Employee> empList = new ArrayList<>(15);
+	private List<Employee> empList = new ArrayList<>(15);
+	private DateFormat df = new SimpleDateFormat("yyyyMMdd");
 
 	public EmployeeDemo() {
 		try {
-			DateFormat df = new SimpleDateFormat("yyyyMMdd");
+			
 			Date d = null;
 
 			d = df.parse("19990605");
@@ -59,10 +60,21 @@ public class EmployeeDemo {
 		Comparator<Employee> c = ( e1, e2) -> {return e1.getId() - e2.getId() ;};
 		//Collections.sort(empList, ( e1, e2) -> {return e1.getId() - e2.getId() ;});
 		//Collections.sort(empList, c); 		System.out.println(empList);
-		List<Employee> sbList = empList.stream().filter(e-> e.getId()>8).collect(Collectors.toList());
+		List<Employee> sbList = empList.stream().filter(e-> {
+		Date d = null;
+		try {
+			d = df.parse("19990725");
+		} catch (ParseException e3) {
+			e3.printStackTrace();
+		}
+		return  e.getJoinDate().getTime() > d.getTime();  }
+				).collect(Collectors.toList());
 		/*List<Employee> sbList1 = empList.stream().filter(
 				(Employee e1, Employee e2) ->  e1.getJoinDate().getTime() - e2.getJoinDate().getTime()
 				).collect(Collectors.toList());*/
+		System.out.println(sbList);
+		Comparator<Employee> c1 = ( e1, e2) -> {return (int) (e2.getJoinDate().getTime() - e1.getJoinDate().getTime()) ;};
+		Collections.sort(sbList, c1);
 		System.out.println(sbList);
 
 		

@@ -69,8 +69,9 @@ public class Poker
 		
 		private String handAsString;
 
-		public PokerHand(String hand) {
+		public PokerHand(String hand, String handType) {
 			handAsString = hand;
+			this.handType = handType;
 		}
 
 		public Boolean isGreaterThan(PokerHand hand2) {
@@ -81,29 +82,85 @@ public class Poker
 			List<Card> handCard = populateSuitAndRandArrs1(handArr);
 			String[] handArr2 = hand2.handAsString.split(",");
 			List<Card> handCard2 = populateSuitAndRandArrs1(handArr2);
-			//if(true) return true;
-
-			
+			//if(true) return true;		
 
 			boolean flag = isGreaterThan(handCard, handCard2);
-
-			/*System.out.println(rankArr);
-			System.out.println(suitArr);
-			System.out.println(rankArr2);
-			System.out.println(suitArr2); */
-			return false;
+			
+			return flag;
 		}
 		
 		private boolean isGreaterThan(List<Card> handCard, List<Card> handCard2) {
-			checkStraightFlush(handCard);
-			checkStraightFlush(handCard2);
+			if(handType.equalsIgnoreCase("straight flush")) {
+				boolean firstHand = checkStraightFlush(handCard);
+				boolean secondHand = checkStraightFlush(handCard2);
+				if(firstHand && !secondHand)
+					return true;
+			} else if(handType.equalsIgnoreCase("four of a kind")) {
+				checkFourOfaKind(handCard);
+				checkFourOfaKind(handCard2);
+			} else if(handType.equalsIgnoreCase("flush")) {
+				checkFlush(handCard);
+				checkFlush(handCard2);
+			} else if(handType.equalsIgnoreCase("full house")) {
+				checkFullHouse(handCard);
+				checkFullHouse(handCard2);
+			} else if(handType.equalsIgnoreCase("straight")) {
+				checkStraight(handCard);
+				checkStraight(handCard2);
+			} else if(handType.equalsIgnoreCase("three of a kind")) {
+				checkThreeOfaKind(handCard);
+				checkThreeOfaKind(handCard2);
+			} else if(handType.equalsIgnoreCase("two pair")) {
+				checkTwoPair(handCard);
+				checkTwoPair(handCard2);
+			} else if(handType.equalsIgnoreCase("one pair")) {
+				checkOnePair(handCard);
+				checkOnePair(handCard2);
+			}
+			
 			return false;
 		}
 		
-		private void checkStraightFlush(List<Card> handCard) {
+		private boolean checkStraightFlush(List<Card> handCard) {
 			// rules for Straight Flush
+			boolean isSorted = isSortedList(handCard);
+			String s = "", previous="";
+			boolean isSameSuite = true;
+			for(Card c : handCard) {
+				s = c.getSuit();
+				if(!"".equals(previous) ) {
+					if(s.equals(previous))
+						isSameSuite = true && isSameSuite; 
+					else 
+						isSameSuite = false;
+				}				
+				previous = s;
+			}			
+			return isSorted && isSameSuite;
 		}
 		
+		private boolean isSortedList(List<Card> handCard) {
+			boolean f = true;
+			for(int i = 0; i < handCard.size() - 1; i++) {
+				//System.out.println(handCard.get(i).getOrder());
+				if(handCard.get(i).getOrder() > handCard.get(i+1).getOrder()) {
+					f = false;
+					break;				
+				}
+			}
+			if(f==false) {
+				f = true;
+				for(int i = 0; i < handCard.size() - 1; i++) {
+					//System.out.println(handCard.get(i).getOrder());
+					if(handCard.get(i).getOrder() < handCard.get(i+1).getOrder()) {
+						f = false;
+						break;				}
+				}
+			}
+			//System.out.println(f);
+			return f;
+		}
+
 		private void checkFourOfaKind(List<Card> handCard) {
 			// rules for Four of a Kind
 		}
@@ -136,33 +193,18 @@ public class Poker
 			List<Card> handCard = new ArrayList<>();
 			
 			for (int i = 0 ; i < handArr.length; i++) {
-				String card = handArr[i];
+				String card = handArr[i].trim();
 				String s = getSuit(card);
 				String r = getRank(card);
-				Card c = myRank.get(r);
+				Card c = new Card(myRank.get(r));
 				c.setSuit(s);
 				handCard.add(c);
 			}    		 
-			//System.out.println(handCard);
-			Comparator<Card> c = (o1, o2) -> o1.getOrder() - o2.getOrder();
-			Collections.sort(handCard, c);
-			System.out.println(handCard);
+			//Comparator<Card> c = (o1, o2) -> o2.getOrder() - o1.getOrder();
+			//Collections.sort(handCard, c);
 			return handCard;
 		}
-
-		/*public static void populateSuitAndRandArrs(String[] handArr, String[] suitArr, String[] rankArr) {
-			for (int i = 0 ; i < handArr.length; i++) {
-				String card = handArr[i];
-				String s = getSuit(card);
-				String r = getRank(card);
-				suitArr[i] = s;
-				rankArr[i] = r;
-
-				System.out.print(rankArr[i]);
-				System.out.println(suitArr[i]);
-			}    		 
-		} */
-
+		
 		public static String getRank(String str) {
 			String result = Optional.ofNullable(str)
 					.filter(sStr -> sStr.length() != 0)
@@ -190,7 +232,13 @@ public class Poker
 		private Integer order;
 		private String suit;
 		
-		private Card(String rank, Integer order) {
+		public Card(Card c) {
+			this.rank = c.getRank();
+			this.order = c.getOrder();
+			this.suit = c.getSuit();
+		}
+		
+		public Card(String rank, Integer order) {
 			this.rank = rank;
 			this.order = order;
 		}
@@ -218,55 +266,54 @@ public class Poker
 
 	public static void testHand1IsGreaterThanHand2(String hand1AsString,
 			String hand2AsString,
-			Boolean expectedResult) {
-		PokerHand hand1 = new PokerHand(hand1AsString);
-		PokerHand hand2 = new PokerHand(hand2AsString);
+			Boolean expectedResult, String handType) {
+		PokerHand hand1 = new PokerHand(hand1AsString, handType);
+		PokerHand hand2 = new PokerHand(hand2AsString, handType);
 		System.out.println("Hand1[" + hand1 + "] > Hand2[" + hand2 + "] \t-- " +
 				"expected: " + expectedResult + ", actual: " + hand1.isGreaterThan(hand2));
 	}
 
 	public static void main(String[] args) {
 		testHand1IsGreaterThanHand2(
-				"8C,9C,10C,JC,QC", // straight flush				
+				"8C,9C,10C,JC,QC", // straight flush	
 				"6S,7H,8D,9H,10D",				
-				true);
-
-		if(true) return;
+				true, "straight flush");
 
 		testHand1IsGreaterThanHand2(
 				"4H,4D,4C,4S,JS", //four of a kind
 				"6C,6S,KH,AS,AD",
-				true);
-
+				true, "four of a kind");
+		if(true) return;
+		
 		testHand1IsGreaterThanHand2(
 				"6C,6D,6H,9C,KD",
 				"5C,3C,10C,KC,7C", // flush
-				false);
+				false, "flush");
 
 		testHand1IsGreaterThanHand2(
 				"4H,4D,4C,KC,KD", // full house
 				"9D,6S,KH,AS,AD",
-				true);
+				true, "full house");
 
 		testHand1IsGreaterThanHand2(
 				"6C,6D,6H,9C,KD",
 				"2C,3C,4S,5S,6S", // straight
-				false);
+				false, "straight");
 
 		testHand1IsGreaterThanHand2(
 				"7C,7D,7S,3H,4D", // three of a kind
 				"9S,6S,10D,AS,AD",
-				true);
+				true, "three of a kind");
 
 		testHand1IsGreaterThanHand2(
 				"2S,2D,JH,7S,AC",
 				"8C,8H,10S,KH,KS", // two pair
-				false);
+				false, "two pair");
 
 		testHand1IsGreaterThanHand2(
 				"AC,AH,3C,QH,10C", // one pair
 				"3S,2D,KH,JS,AD",
-				true);
+				true, "one pair");
 	}
 }
 

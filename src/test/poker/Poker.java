@@ -1,9 +1,16 @@
 package test.poker;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import com.sun.java.swing.plaf.windows.WindowsTreeUI.CollapsedIcon;
+
+import test.poker.Poker.Card;
 
 public class Poker
 {
@@ -34,26 +41,32 @@ public class Poker
 
 	final String[] RANKS_ARR = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
 	final String[] SUIT_ARR =  {"C", "D", "S", "H"}; // CLUB, DIAMOND, SPADE, HEART
-	private List<Card> myRank = new ArrayList<>(15);
+	//private static List<Card> myRank = new ArrayList<>(15);
+	private static Map<String, Card> myRank = new LinkedHashMap<>(15);
 	
-	{
-		myRank.add(new Card("2",   2));
-		myRank.add(new Card("3",   3));
-		myRank.add(new Card("4",   4));
-		myRank.add(new Card("5",   5));
-		myRank.add(new Card("6",   6));
-		myRank.add(new Card("7",   7));
-		myRank.add(new Card("8",   8));
-		myRank.add(new Card("9",   9));
-		myRank.add(new Card("10", 10));
-		myRank.add(new Card("J",  11));
-		myRank.add(new Card("Q",  12));
-		myRank.add(new Card("K",  13));
-		myRank.add(new Card("A",  14));
+	static {
+		myRank.put("2",new Card("2",   2));
+		myRank.put("3",new Card("3",   3));
+		myRank.put("4",new Card("4",   4));
+		myRank.put("5",new Card("5",   5));
+		myRank.put("6",new Card("6",   6));
+		myRank.put("7",new Card("7",   7));
+		myRank.put("8",new Card("8",   8));
+		myRank.put("9",new Card("9",   9));
+		myRank.put("10",new Card("10", 10));
+		myRank.put("J",new Card("J",  11));
+		myRank.put("Q",new Card("Q",  12));
+		myRank.put("K",new Card("K",  13));
+		myRank.put("A",new Card("A",  14));
 	}
 
 	static class PokerHand {
-
+		
+		private String handType;
+		private enum Suit {
+			CLUB, DIAMOND, SPADE, HEART
+		}; 
+		
 		private String handAsString;
 
 		public PokerHand(String hand) {
@@ -65,57 +78,79 @@ public class Poker
 			System.out.println(handAsString);
 			System.out.println(hand2.handAsString);
 			String[] handArr = handAsString.split(",");
-			orderBy(handArr);
-			String[] suitArr = new String[5];
-			String[] rankArr = new String[5];
-
+			List<Card> handCard = populateSuitAndRandArrs1(handArr);
 			String[] handArr2 = hand2.handAsString.split(",");
-			orderBy(handArr2);
-			String[] suitArr2 = new String[5];
-			String[] rankArr2 = new String[5];
+			List<Card> handCard2 = populateSuitAndRandArrs1(handArr2);
+			//if(true) return true;
 
-			populateSuitAndRandArrs(handArr, suitArr, rankArr);
-			populateSuitAndRandArrs(handArr2, suitArr2, rankArr2);
-			/*orderBy(rankArr);
-			orderBy(suitArr);
-			orderBy(rankArr2);
-			orderBy(suitArr2);*/
-			boolean flag = isGreaterThan(rankArr, suitArr);
-			/*handAsString.length();
-    	 String suit = handAsString.substring(1, handAsString.length()); */
-			System.out.println(rankArr);
+			
+
+			boolean flag = isGreaterThan(handCard, handCard2);
+
+			/*System.out.println(rankArr);
 			System.out.println(suitArr);
 			System.out.println(rankArr2);
-			System.out.println(suitArr2);
+			System.out.println(suitArr2); */
 			return false;
 		}
-
-		private void orderBy(String[] handArray) {
-		   for(int i = 0; i < handArray.length - 1; i++) {
-			   boolean flg = false;
-			   for(int j = 0 ; j < handArray.length - 1 - i; j++ ) {
-				   String tmp = handArray[j];
-				   String tmp1 = handArray[j+1];
-				   String s = getRank(tmp1);
-				   String r = getRank(tmp);
-				   if(r.compareTo(s) > -1) {
-					   handArray[j] = handArray[j+1];
-					   handArray[j+1] = tmp;
-					   flg = true;
-				   }
-				   
-			   } 
-			   if(flg==false) 
-				   break;			   
-		   }
+		
+		private boolean isGreaterThan(List<Card> handCard, List<Card> handCard2) {
+			checkStraightFlush(handCard);
+			checkStraightFlush(handCard2);
+			return false;
+		}
+		
+		private void checkStraightFlush(List<Card> handCard) {
+			// rules for Straight Flush
+		}
+		
+		private void checkFourOfaKind(List<Card> handCard) {
+			// rules for Four of a Kind
 		}
 
-		private boolean isGreaterThan(String[] rankArr, String[] suitArr) {
+		private void checkFlush(List<Card> handCard) {
+			// rules for Flush
+		}
+		
+		private void checkFullHouse(List<Card> handCard) {
+			// rules for Full House
+		}
+		
+		private void checkStraight(List<Card> handCard) {
+			// rules for Straight 
+		}
+		
+		private void checkThreeOfaKind(List<Card> handCard) {
+			// rules for Three of a Kind
+		}
+		
+		private void checkTwoPair(List<Card> handCard) {
+			// rules for Two Pair
+		}
+		
+		private void checkOnePair(List<Card> handCard) {
+			// rules for One Pair
+		}
+
+		public static List<Card> populateSuitAndRandArrs1(String[] handArr) {
+			List<Card> handCard = new ArrayList<>();
 			
-			return false;
+			for (int i = 0 ; i < handArr.length; i++) {
+				String card = handArr[i];
+				String s = getSuit(card);
+				String r = getRank(card);
+				Card c = myRank.get(r);
+				c.setSuit(s);
+				handCard.add(c);
+			}    		 
+			//System.out.println(handCard);
+			Comparator<Card> c = (o1, o2) -> o1.getOrder() - o2.getOrder();
+			Collections.sort(handCard, c);
+			System.out.println(handCard);
+			return handCard;
 		}
 
-		public static void populateSuitAndRandArrs(String[] handArr, String[] suitArr, String[] rankArr) {
+		/*public static void populateSuitAndRandArrs(String[] handArr, String[] suitArr, String[] rankArr) {
 			for (int i = 0 ; i < handArr.length; i++) {
 				String card = handArr[i];
 				String s = getSuit(card);
@@ -126,7 +161,7 @@ public class Poker
 				System.out.print(rankArr[i]);
 				System.out.println(suitArr[i]);
 			}    		 
-		} 
+		} */
 
 		public static String getRank(String str) {
 			String result = Optional.ofNullable(str)
@@ -150,23 +185,34 @@ public class Poker
 		}
 	}
 	
-	final static class Card implements Comparator<Card> {
+	final static class Card  {
 		private String rank;
 		private Integer order;
+		private String suit;
+		
 		private Card(String rank, Integer order) {
 			this.rank = rank;
 			this.order = order;
 		}
 		
-		@Override
-		public int compare(Card o1, Card o2) {
-			return o1.getOrder() - o2.getOrder();
-		}
 		public String getRank() {
 			return rank;
 		}
 		public Integer getOrder() {
 			return order;
+		}
+
+		public String getSuit() {
+			return suit;
+		}
+
+		public void setSuit(String suit) {
+			this.suit = suit;
+		}
+		
+		@Override
+		public String toString() {
+			return "["+this.rank+this.suit+"]";
 		}
 	}
 
@@ -181,10 +227,8 @@ public class Poker
 
 	public static void main(String[] args) {
 		testHand1IsGreaterThanHand2(
-				//"8C,9C,10C,JC,QC", // straight flush
-				"10C,8C,JC,9C,QC", // straight flush
-				//"6S,7H,8D,9H,10D",
-				"8D,10D,6S,7H,9H",
+				"8C,9C,10C,JC,QC", // straight flush				
+				"6S,7H,8D,9H,10D",				
 				true);
 
 		if(true) return;

@@ -1,16 +1,10 @@
 package test.poker;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import com.sun.java.swing.plaf.windows.WindowsTreeUI.CollapsedIcon;
-
-import test.poker.Poker.Card;
 
 public class Poker
 {
@@ -63,9 +57,9 @@ public class Poker
 	static class PokerHand {
 		
 		private String handType;
-		private enum Suit {
+		/*private enum Suit {
 			CLUB, DIAMOND, SPADE, HEART
-		}; 
+		}; */
 		
 		private String handAsString;
 
@@ -76,13 +70,12 @@ public class Poker
 
 		public Boolean isGreaterThan(PokerHand hand2) {
 			// This is where you'll implement the poker hand comparison logic
-			System.out.println(handAsString);
-			System.out.println(hand2.handAsString);
+			//System.out.println("=="+handAsString);
+			//System.out.println(hand2.handAsString);
 			String[] handArr = handAsString.split(",");
 			List<Card> handCard = populateSuitAndRandArrs1(handArr);
 			String[] handArr2 = hand2.handAsString.split(",");
 			List<Card> handCard2 = populateSuitAndRandArrs1(handArr2);
-			//if(true) return true;		
 
 			boolean flag = isGreaterThan(handCard, handCard2);
 			
@@ -96,26 +89,40 @@ public class Poker
 				if(firstHand && !secondHand)
 					return true;
 			} else if(handType.equalsIgnoreCase("four of a kind")) {
-				checkFourOfaKind(handCard);
-				checkFourOfaKind(handCard2);
+				boolean firstHand = checkFourOfaKind(handCard);
+				boolean secondHand = checkFourOfaKind(handCard2);
+				if(firstHand && !secondHand)
+					return true;
 			} else if(handType.equalsIgnoreCase("flush")) {
-				checkFlush(handCard);
-				checkFlush(handCard2);
+				boolean firstHand =checkFlush(handCard);
+				boolean secondHand =checkFlush(handCard2);
+				if(firstHand && !secondHand)
+					return true;
 			} else if(handType.equalsIgnoreCase("full house")) {
-				checkFullHouse(handCard);
-				checkFullHouse(handCard2);
+				boolean firstHand =checkFullHouse(handCard);
+				boolean secondHand =checkFullHouse(handCard2);
+				if(firstHand && !secondHand)
+					return true;
 			} else if(handType.equalsIgnoreCase("straight")) {
-				checkStraight(handCard);
-				checkStraight(handCard2);
+				boolean firstHand =checkStraight(handCard);
+				boolean secondHand =checkStraight(handCard2);
+				if(firstHand && !secondHand)
+					return true;
 			} else if(handType.equalsIgnoreCase("three of a kind")) {
-				checkThreeOfaKind(handCard);
-				checkThreeOfaKind(handCard2);
+				boolean firstHand =checkThreeOfaKind(handCard);
+				boolean secondHand =checkThreeOfaKind(handCard2);
+				if(firstHand && !secondHand)
+					return true;
 			} else if(handType.equalsIgnoreCase("two pair")) {
-				checkTwoPair(handCard);
-				checkTwoPair(handCard2);
+				boolean firstHand =checkTwoPair(handCard);
+				boolean secondHand =checkTwoPair(handCard2);
+				if(firstHand && !secondHand)
+					return true;
 			} else if(handType.equalsIgnoreCase("one pair")) {
-				checkOnePair(handCard);
-				checkOnePair(handCard2);
+				boolean firstHand =checkOnePair(handCard);
+				boolean secondHand =checkOnePair(handCard2);
+				if(firstHand && !secondHand)
+					return true;
 			}
 			
 			return false;
@@ -141,52 +148,227 @@ public class Poker
 		
 		private boolean isSortedList(List<Card> handCard) {
 			boolean f = true;
+			boolean isSequencial = true;
 			for(int i = 0; i < handCard.size() - 1; i++) {
 				//System.out.println(handCard.get(i).getOrder());
-				if(handCard.get(i).getOrder() > handCard.get(i+1).getOrder()) {
-					f = false;
-					break;				
-				}
-			}
-			if(f==false) {
-				f = true;
-				for(int i = 0; i < handCard.size() - 1; i++) {
-					//System.out.println(handCard.get(i).getOrder());
-					if(handCard.get(i).getOrder() < handCard.get(i+1).getOrder()) {
-						f = false;
-						break;				}
-				}
+				if((handCard.get(i+1).getOrder() - handCard.get(i).getOrder() == 1) || 
+						(handCard.get(i).getOrder() - handCard.get(i+1).getOrder() == 1) ) {
+					f = isSequencial && f ;
+				} else 
+					isSequencial = false;
 			}
 			//System.out.println(f);
+			return isSequencial && f;
+		}
+
+		private boolean checkFourOfaKind(List<Card> handCard) {
+			// rules for Four of a Kind
+			boolean f = false;
+			int c2 = 0, c3=0, c4=0, c5=0, c6=0, c7=0, c8=0, c9=0, c10=0, cj=0, cq=0, ck=0, ca=0;
+			for(Card c : handCard) {
+				String r = c.getRank();
+				switch(r) {
+				case "2": c2++; break;
+				case "3": c3++; break;
+				case "4": c4++; break;
+				case "5": c5++; break;
+				case "6": c6++; break;
+				case "7": c7++; break;
+				case "8": c8++; break;
+				case "9": c9++; break;
+				case "10": c10++; break;
+				case "J": cj++;  break;
+				case "Q": cq++;  break;
+				case "K": ck++;  break;
+				case "A": ca++;  break;
+				}
+			}	
+			if(c2==4 || c3==4|| c4==4|| c5==4|| c6==4|| c7==4|| c8==4|| c9==4|| c10==4|| cj==4|| cq==4|| ck==4|| ca==4)
+				f = true;
 			return f;
 		}
 
-		private void checkFourOfaKind(List<Card> handCard) {
-			// rules for Four of a Kind
-		}
-
-		private void checkFlush(List<Card> handCard) {
+		private boolean checkFlush(List<Card> handCard) {
 			// rules for Flush
+			boolean f = false;
+			int cl=0, di=0, sp=0, he=0;
+			for(Card c : handCard) {				
+				String s = c.getSuit();
+				//System.out.println(s);
+				switch(s) {
+				case "C": cl++; break;
+				case "D": di++; break;
+				case "S": sp++; break;
+				case "H": he++; break;
+				}
+			}
+			if(cl==5 || di==5||sp==5||he==5)
+			f = true;
+			boolean isSorted = !isSortedList(handCard);   // Ranks is sequencial or not
+			
+			return f&&isSorted;
 		}
 		
-		private void checkFullHouse(List<Card> handCard) {
+		private boolean checkFullHouse(List<Card> handCard) {
 			// rules for Full House
+			int c2 = 0, c3=0, c4=0, c5=0, c6=0, c7=0, c8=0, c9=0, c10=0, cj=0, cq=0, ck=0, ca=0;
+			for(Card c : handCard) {
+				String r = c.getRank();
+				switch(r) {
+				case "2": c2++; break;
+				case "3": c3++; break;
+				case "4": c4++; break;
+				case "5": c5++; break;
+				case "6": c6++; break;
+				case "7": c7++; break;
+				case "8": c8++; break;
+				case "9": c9++; break;
+				case "10": c10++; break;
+				case "J": cj++;  break;
+				case "Q": cq++;  break;
+				case "K": ck++;  break;
+				case "A": ca++;  break;
+				}
+			}	
+			boolean r1 = false, r2=false;
+			if(c2==3 || c3==3|| c4==3|| c5==3|| c6==3|| c7==3|| c8==3|| c9==3|| c10==3|| cj==3|| cq==3|| ck==3|| ca==3)
+				r1 = true;
+			if(c2==2 || c3==2|| c4==2|| c5==2|| c6==2|| c7==2|| c8==2|| c9==2|| c10==2|| cj==2|| cq==2|| ck==2|| ca==2)
+				r2 = true;
+
+			return r1&&r2;
 		}
 		
-		private void checkStraight(List<Card> handCard) {
-			// rules for Straight 
+		private boolean checkStraight(List<Card> handCard) {
+			// rules for Straight
+			boolean f = false;
+			boolean isSorted = isSortedList(handCard);
+			
+			int cl=0, di=0, sp=0, he=0;
+			for(Card c : handCard) {				
+				String s = c.getSuit();
+				//System.out.println(s);
+				switch(s) {
+				case "C": cl++; break;
+				case "D": di++; break;
+				case "S": sp++; break;
+				case "H": he++; break;
+				}
+			}
+			if((cl==2 && (di==1&&sp==1&&he==1)) ||  (di==2 && (cl==1&&sp==1&&he==1)) ||
+					 (sp==2 && (cl==1&&di==1&&he==1)) ||  (he==2 && (cl==1&&sp==1&&di==1)))
+				f = true;
+			//System.out.println("is sequ:"+isSorted +",f:" +f);
+			return f&&isSorted;
 		}
 		
-		private void checkThreeOfaKind(List<Card> handCard) {
+		private boolean checkThreeOfaKind(List<Card> handCard) {
 			// rules for Three of a Kind
+			int c2 = 0, c3=0, c4=0, c5=0, c6=0, c7=0, c8=0, c9=0, c10=0, cj=0, cq=0, ck=0, ca=0;
+			for(Card c : handCard) {
+				String r = c.getRank();
+				switch(r) {
+				case "2": c2++; break;
+				case "3": c3++; break;
+				case "4": c4++; break;
+				case "5": c5++; break;
+				case "6": c6++; break;
+				case "7": c7++; break;
+				case "8": c8++; break;
+				case "9": c9++; break;
+				case "10": c10++; break;
+				case "J": cj++;  break;
+				case "Q": cq++;  break;
+				case "K": ck++;  break;
+				case "A": ca++;  break;
+				}
+			}	
+			boolean r1 = false, r2=false;
+			if(c2==3 || c3==3|| c4==3|| c5==3|| c6==3|| c7==3|| c8==3|| c9==3|| c10==3|| cj==3|| cq==3|| ck==3|| ca==3)
+				r1 = true;
+			if(c2==1 || c3==1|| c4==1|| c5==1|| c6==1|| c7==1|| c8==1|| c9==1|| c10==1|| cj==1|| cq==1|| ck==1|| ca==1)
+				r2 = true;
+			return r1&&r2;
 		}
 		
-		private void checkTwoPair(List<Card> handCard) {
+		private boolean checkTwoPair(List<Card> handCard) {
 			// rules for Two Pair
+			int c2 = 0, c3=0, c4=0, c5=0, c6=0, c7=0, c8=0, c9=0, c10=0, cj=0, cq=0, ck=0, ca=0;
+			for(Card c : handCard) {
+				String r = c.getRank();
+				switch(r) {
+				case "2": c2++; break;
+				case "3": c3++; break;
+				case "4": c4++; break;
+				case "5": c5++; break;
+				case "6": c6++; break;
+				case "7": c7++; break;
+				case "8": c8++; break;
+				case "9": c9++; break;
+				case "10": c10++; break;
+				case "J": cj++;  break;
+				case "Q": cq++;  break;
+				case "K": ck++;  break;
+				case "A": ca++;  break;
+				}
+			}	
+			boolean r1 = false;
+			if((c2==2 && (c3==2|| c4==2|| c5==2|| c6==2|| c7==2|| c8==2|| c9==2|| c10==2|| cj==2|| cq==2|| ck==2|| ca==2))||
+			   (c3==2 && (c2==2|| c4==2|| c5==2|| c6==2|| c7==2|| c8==2|| c9==2|| c10==2|| cj==2|| cq==2|| ck==2|| ca==2))||
+			   (c4==2 && (c2==2|| c3==2|| c5==2|| c6==2|| c7==2|| c8==2|| c9==2|| c10==2|| cj==2|| cq==2|| ck==2|| ca==2))||
+			   (c5==2 && (c2==2|| c4==2|| c3==2|| c6==2|| c7==2|| c8==2|| c9==2|| c10==2|| cj==2|| cq==2|| ck==2|| ca==2))||
+			   (c6==2 && (c2==2|| c4==2|| c5==2|| c3==2|| c7==2|| c8==2|| c9==2|| c10==2|| cj==2|| cq==2|| ck==2|| ca==2))||
+			   (c7==2 && (c2==2|| c4==2|| c5==2|| c6==2|| c3==2|| c8==2|| c9==2|| c10==2|| cj==2|| cq==2|| ck==2|| ca==2))||
+			   (c8==2 && (c2==2|| c4==2|| c5==2|| c6==2|| c7==2|| c3==2|| c9==2|| c10==2|| cj==2|| cq==2|| ck==2|| ca==2))||
+			   (c9==2 && (c2==2|| c4==2|| c5==2|| c6==2|| c7==2|| c8==2|| c3==2|| c10==2|| cj==2|| cq==2|| ck==2|| ca==2))||
+			   (c10==2 && (c2==2|| c4==2|| c5==2|| c6==2|| c7==2|| c8==2|| c9==2|| c3==2|| cj==2|| cq==2|| ck==2|| ca==2))||
+			   (cj==2 && (c2==2|| c4==2|| c5==2|| c6==2|| c7==2|| c8==2|| c9==2|| c10==2|| c3==2|| cq==2|| ck==2|| ca==2))||
+			   (cq==2 && (c2==2|| c4==2|| c5==2|| c6==2|| c7==2|| c8==2|| c9==2|| c10==2|| cj==2|| c3==2|| ck==2|| ca==2))||
+			   (ck==2 && (c2==2|| c4==2|| c5==2|| c6==2|| c7==2|| c8==2|| c9==2|| c10==2|| cj==2|| cq==2|| c3==2|| ca==2))||
+			   (ca==2 && (c2==2|| c4==2|| c5==2|| c6==2|| c7==2|| c8==2|| c9==2|| c10==2|| cj==2|| cq==2|| ck==2|| c3==2))
+			  )
+				r1 = true;
+			return r1;
 		}
 		
-		private void checkOnePair(List<Card> handCard) {
+		private boolean checkOnePair(List<Card> handCard) {
 			// rules for One Pair
+			int c2 = 0, c3=0, c4=0, c5=0, c6=0, c7=0, c8=0, c9=0, c10=0, cj=0, cq=0, ck=0, ca=0;
+			for(Card c : handCard) {
+				String r = c.getRank();
+				switch(r) {
+				case "2": c2++; break;
+				case "3": c3++; break;
+				case "4": c4++; break;
+				case "5": c5++; break;
+				case "6": c6++; break;
+				case "7": c7++; break;
+				case "8": c8++; break;
+				case "9": c9++; break;
+				case "10": c10++; break;
+				case "J": cj++;  break;
+				case "Q": cq++;  break;
+				case "K": ck++;  break;
+				case "A": ca++;  break;
+				}
+			}	
+			boolean r1 = false;
+			if((c2==2 && (c3==1|| c4==1|| c5==1|| c6==1|| c7==1|| c8==1|| c9==1|| c10==1|| cj==1|| cq==1|| ck==1|| ca==1))||
+			   (c3==2 && (c2==1|| c4==1|| c5==1|| c6==1|| c7==1|| c8==1|| c9==1|| c10==1|| cj==1|| cq==1|| ck==1|| ca==1))||
+			   (c4==2 && (c2==1|| c3==1|| c5==1|| c6==1|| c7==1|| c8==1|| c9==1|| c10==1|| cj==1|| cq==1|| ck==1|| ca==1))||
+			   (c5==2 && (c2==1|| c4==1|| c3==1|| c6==1|| c7==1|| c8==1|| c9==1|| c10==1|| cj==1|| cq==1|| ck==1|| ca==1))||
+			   (c6==2 && (c2==1|| c4==1|| c5==1|| c3==1|| c7==1|| c8==1|| c9==1|| c10==1|| cj==1|| cq==1|| ck==1|| ca==1))||
+			   (c7==2 && (c2==1|| c4==1|| c5==1|| c6==1|| c3==1|| c8==1|| c9==1|| c10==1|| cj==1|| cq==1|| ck==1|| ca==1))||
+			   (c8==2 && (c2==1|| c4==1|| c5==1|| c6==1|| c7==1|| c3==1|| c9==1|| c10==1|| cj==1|| cq==1|| ck==1|| ca==1))||
+			   (c9==2 && (c2==1|| c4==1|| c5==1|| c6==1|| c7==1|| c8==1|| c3==1|| c10==1|| cj==1|| cq==1|| ck==1|| ca==1))||
+			   (c10==2 && (c2==1|| c4==1|| c5==1|| c6==1|| c7==1|| c8==1|| c9==1|| c3==1|| cj==1|| cq==1|| ck==1|| ca==1))||
+			   (cj==2 && (c2==1|| c4==1|| c5==1|| c6==1|| c7==1|| c8==1|| c9==1|| c10==1|| c3==1|| cq==1|| ck==1|| ca==1))||
+			   (cq==2 && (c2==1|| c4==1|| c5==1|| c6==1|| c7==1|| c8==1|| c9==1|| c10==1|| cj==1|| c3==1|| ck==1|| ca==1))||
+			   (ck==2 && (c2==1|| c4==1|| c5==1|| c6==1|| c7==1|| c8==1|| c9==1|| c10==1|| cj==1|| cq==1|| c3==1|| ca==1))||
+			   (ca==2 && (c2==1|| c4==1|| c5==1|| c6==1|| c7==1|| c8==1|| c9==1|| c10==1|| cj==1|| cq==1|| ck==1|| c3==1))
+			  )
+				r1 = true;
+			return r1;
 		}
 
 		public static List<Card> populateSuitAndRandArrs1(String[] handArr) {
@@ -270,12 +452,14 @@ public class Poker
 		PokerHand hand1 = new PokerHand(hand1AsString, handType);
 		PokerHand hand2 = new PokerHand(hand2AsString, handType);
 		System.out.println("Hand1[" + hand1 + "] > Hand2[" + hand2 + "] \t-- " +
-				"expected: " + expectedResult + ", actual: " + hand1.isGreaterThan(hand2));
+				"expected: " + expectedResult + ", actual: " + hand1.isGreaterThan(hand2) +
+				", hand type:" + handType
+				);
 	}
 
 	public static void main(String[] args) {
-		testHand1IsGreaterThanHand2(
-				"8C,9C,10C,JC,QC", // straight flush	
+	   testHand1IsGreaterThanHand2(
+				"8C,9C,10C,JC,QC", // straight flush				
 				"6S,7H,8D,9H,10D",				
 				true, "straight flush");
 
@@ -283,10 +467,9 @@ public class Poker
 				"4H,4D,4C,4S,JS", //four of a kind
 				"6C,6S,KH,AS,AD",
 				true, "four of a kind");
-		if(true) return;
 		
 		testHand1IsGreaterThanHand2(
-				"6C,6D,6H,9C,KD",
+				"6C,6D,6H,9C,KD",  
 				"5C,3C,10C,KC,7C", // flush
 				false, "flush");
 
@@ -294,9 +477,9 @@ public class Poker
 				"4H,4D,4C,KC,KD", // full house
 				"9D,6S,KH,AS,AD",
 				true, "full house");
-
+		
 		testHand1IsGreaterThanHand2(
-				"6C,6D,6H,9C,KD",
+				"6C,6D,6H,9C,KD",     // 
 				"2C,3C,4S,5S,6S", // straight
 				false, "straight");
 
@@ -304,7 +487,7 @@ public class Poker
 				"7C,7D,7S,3H,4D", // three of a kind
 				"9S,6S,10D,AS,AD",
 				true, "three of a kind");
-
+		//if(true) return;
 		testHand1IsGreaterThanHand2(
 				"2S,2D,JH,7S,AC",
 				"8C,8H,10S,KH,KS", // two pair

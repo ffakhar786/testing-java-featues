@@ -34,7 +34,7 @@ public class FunctionalIntefaceMain {
 		ilst = Arrays.asList(8, 4, 2, 5, 0, 12, 3, 17, 13);
 		int sum = sumStream(ilst);
 		System.out.println(sum);
-		if (true) return ;
+		///if (true) return ;
 
 		Stream<Integer> stream = Stream.of(1,2,3,4);
 		stream = Stream.of(new Integer[]{1,2,3,4});

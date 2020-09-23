@@ -8,8 +8,7 @@ public class MergePDFs {
 	public static void main(String[] args) throws IOException {
 		// Instantiating PDFMergerUtility class
 		PDFMergerUtility PDFmerger = new PDFMergerUtility();
-		File file1 = new File("C:\\Users\\fm245e\\Documents\\Macro\\pstubs\\CheckDetailfor_1912.pdf");
-		// adding the source files
+		File file1 = new File("C:\\Users\\fm245e\\Documents\\Macro\\pstubs\\CheckDetailfor_1912.pdf");		
 		PDFmerger.addSource(file1);
 		file1 = new File("C:\\Users\\fm245e\\Documents\\Macro\\pstubs\\CheckDetailfor_1911.pdf");
 		PDFmerger.addSource(file1);
@@ -33,10 +32,17 @@ public class MergePDFs {
 		PDFmerger.addSource(file1);
 		file1 = new File("C:\\Users\\fm245e\\Documents\\Macro\\pstubs\\CheckDetailfor_1901.pdf");
 		PDFmerger.addSource(file1);
+		file1 = new File("C:\\Users\\fm245e\\Documents\\Macro\\pstubs\\CheckDetailfor_1812.pdf");
+		PDFmerger.addSource(file1);
+		file1 = new File("C:\\Users\\fm245e\\Documents\\Macro\\pstubs\\CheckDetailfor_1811.pdf");
+		PDFmerger.addSource(file1);
+		file1 = new File("C:\\Users\\fm245e\\Documents\\Macro\\pstubs\\CheckDetailfor_1810.pdf");
+		PDFmerger.addSource(file1);
 
 		// Setting the destination file
 		PDFmerger.setDestinationFileName("C:\\Users\\fm245e\\Documents\\Macro\\pstubs\\merged_2019.pdf");
-
+		PDFmerger.mergeDocuments();
+		
 		PDFmerger = new PDFMergerUtility();
 		file1 = new File("C:\\Users\\fm245e\\Documents\\Macro\\pstubs\\CheckDetailfor_2008.pdf");
 		// adding the source files
